@@ -2,7 +2,16 @@
 
 from typing import Dict, Optional
 import numpy as np
-from river import anomaly, compose, preprocessing
+
+try:
+    from river import anomaly, compose, preprocessing
+    HAS_RIVER = True
+except ImportError:
+    HAS_RIVER = False
+    # Create dummy classes for type hints
+    anomaly = None
+    compose = None
+    preprocessing = None
 
 from .base import BaseDetector
 from ..utils.config import settings
@@ -36,6 +45,9 @@ class OnlineDetector(BaseDetector):
         Args:
             feature_names: List of feature names
         """
+        if not HAS_RIVER:
+            raise ImportError("river library is required for OnlineDetector. Install with: pip install river")
+        
         self.feature_names = sorted(feature_names)
         
         # Create pipeline: normalize -> anomaly detector

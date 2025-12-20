@@ -3,7 +3,14 @@
 import pytest
 import numpy as np
 from src.ap.models.isolation_forest import IsolationForestDetector
-from src.ap.models.online_detector import OnlineDetector
+
+# Try to import online detector, skip tests if not available
+try:
+    from src.ap.models.online_detector import OnlineDetector
+    HAS_RIVER = True
+except ImportError:
+    HAS_RIVER = False
+    OnlineDetector = None
 
 
 def test_isolation_forest_detector():
@@ -41,6 +48,7 @@ def test_isolation_forest_detector():
     assert isinstance(is_anomaly, bool)
 
 
+@pytest.mark.skipif(not HAS_RIVER, reason="river library not available")
 def test_online_detector():
     """Test online detector."""
     detector = OnlineDetector()
