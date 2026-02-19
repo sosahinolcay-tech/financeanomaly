@@ -1,0 +1,6 @@
+# Development overrides
+
+extends: base.yaml
+
+stream:
+  speed_multiplier: 100.0  # Faster for local dev

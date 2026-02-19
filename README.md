@@ -1,80 +1,196 @@
-# Real-time Financial Anomaly & Explainability Platform
+# Real-Time Market Intelligence & Anomaly Detection System
 
-A streaming pipeline that ingests trade/quote data, computes low-latency features, runs an online anomaly detector, and returns SHAP-backed explanations via a web dashboard. Includes synthetic scenario testing, monitoring, and Dockerized reproducible setup.
+Production-grade streaming market surveillance engine for detecting liquidity shocks, volatility regime shifts, and structural anomalies in real time using adaptive ML and explainable AI.
 
-**Tech Stack:** Kafka/asyncio, Python, SHAP, Streamlit, FastAPI, Docker
+## Overview
 
-## Features
+This system ingests live market data (trades, order book updates), computes microstructure-aware features, applies online anomaly detection and regime modeling, and surfaces explainable alerts via a live dashboard.
 
-- **Real-time ingestion** of market data (simulated or live via websockets)
-- **Streaming feature computation** with low-latency windows
-- **Anomaly detection** using Isolation Forest and online adaptive models
-- **Explainability** via SHAP attributions and human-readable rules
-- **Live dashboard** for alert triage and historical analysis
-- **Synthetic evaluation** with precision/recall metrics
+Designed to demonstrate:
 
-## Quick Start
+- Streaming systems engineering
+- Online ML in production
+- Adaptive thresholding
+- Drift detection
+- Explainable AI (SHAP + counterfactuals)
+- Observability & monitoring
+- Production deployment patterns
 
-### Docker (Recommended)
+## Architecture
+
+```
+Exchange Websocket
+        ↓
+Async Ingestion Layer
+        ↓
+Feature Engine (microstructure-aware)
+        ↓
+Multi-Model Detection Engine
+   ├── Statistical Signals
+   ├── Online ML (River)
+   ├── Autoencoder
+   └── Drift Monitor (ADWIN / KS)
+        ↓
+Explainability Layer
+   ├── SHAP attribution
+   ├── Rule mapping
+   ├── Counterfactual reasoning
+        ↓
+Alert Service
+        ↓
+API + Dashboard
+        ↓
+Prometheus + Grafana
+```
+
+## Core Capabilities
+
+### Real-Time Ingestion
+
+- Binance / Alpaca websocket connectors
+- Async event-driven architecture
+- Reconnection and backpressure handling
+
+### Microstructure Feature Engine
+
+- Log returns
+- Realized volatility
+- Order Flow Imbalance (OFI)
+- Microprice
+- Spread widening
+- Volume spike ratio
+- Regime indicators
+
+### Detection Engine
+
+- Isolation Forest (batch baseline)
+- River HalfSpaceTrees (online)
+- AdaptiveRandomForest
+- Online Autoencoder
+- Ensemble scoring
+- Dynamic percentile-based thresholding
+
+### Drift Detection
+
+- ADWIN
+- KS-test distribution monitoring
+- Population Stability Index (PSI)
+- Alert-rate drift
+
+### Explainability
+
+- SHAP feature attribution
+- Rule-based semantic explanation
+- Counterfactual reasoning
+- Historical similarity search
+
+### Observability
+
+- Prometheus metrics:
+  - Event latency
+  - Model inference time
+  - Alert frequency
+  - Score distribution
+- Grafana dashboards
+- Structured JSON logging
+
+## Evaluation
+
+Evaluation is performed on:
+
+- Real market volatility events
+- Precision@K on forward volatility spikes
+- Score-to-future-move correlation
+- Latency benchmarks (<200ms per event target)
+
+Research artifacts are in:
+
+- `research/benchmarking/`
+
+## Running Locally
 
 ```bash
-docker build -t anomaly-platform .
-docker run -p 8000:8000 -p 8501:8501 anomaly-platform
+# Install deps and generate data
+make install
+make data
+
+# Run pipeline (populates alerts DB)
+make pipeline
+
+# Start API (terminal 1)
+make dev
+
+# Start dashboard (terminal 2)
+make dashboard
 ```
 
-### Local Development
+Or with Docker:
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Generate sample data
-python -m src.ap.cli generate-data --output data/sample_trades.csv
-
-# Run the pipeline
-python -m src.ap.cli run-pipeline --data data/sample_trades.csv
-
-# Start API server (in another terminal)
-uvicorn src.ap.api.server:app --host 0.0.0.0 --port 8000
-
-# Start dashboard (in another terminal)
-streamlit run src/ap/ui/dashboard.py
+docker-compose -f docker/docker-compose.yml up --build
 ```
 
-## Project Structure
+**Services:**
 
+| Service    | URL                     |
+|-----------|-------------------------|
+| API       | http://localhost:8000   |
+| Dashboard | http://localhost:8501   |
+| Prometheus| http://localhost:9090    |
+| Grafana   | http://localhost:3000    |
+
+## Configuration
+
+All runtime behavior is configurable via:
+
+- `configs/`
+
+Environment overrides supported.
+
+## Testing
+
+```bash
+make test
 ```
-anomaly-platform/
-├── data/                      # sample data & synthetic anomaly generator
-├── docs/                      # documentation
-├── notebooks/                 # EDA, model training & validation
-├── src/
-│   └── ap/                    # package root (anomaly platform)
-│       ├── ingest/            # connectors & stream simulator
-│       ├── processing/        # streaming feature computation
-│       ├── models/            # detector models & wrappers
-│       ├── explain/           # XAI wrappers
-│       ├── api/               # FastAPI endpoints
-│       ├── ui/                # Streamlit dashboard
-│       ├── persistence/       # DB connectors
-│       └── utils/             # config & utilities
-├── tests/                     # unit & integration tests
-├── Dockerfile
-├── .github/workflows/ci.yml
-└── requirements.txt
-```
 
-## Metrics
+Includes:
 
-- **Precision:** 0.75 on synthetic anomaly scenarios
-- **Recall:** 0.68 on synthetic anomaly scenarios
-- **Average processing latency:** 120ms per event (local)
+- Unit tests
+- Integration tests
+- Performance tests
+- Deterministic replay tests
 
-## Documentation
+## Production Design Principles
 
-See `docs/case_study.md` for methodology, limitations, and design decisions.
+- Async-first architecture
+- Modular detection engine
+- Dependency inversion
+- Config-driven runtime
+- Observability by default
+- Deterministic replay for audit
+- Reproducible Docker builds
 
-## License
+## Tech Stack
 
-MIT
+- Python 3.10+
+- asyncio
+- FastAPI
+- River
+- scikit-learn
+- PyTorch
+- SHAP
+- Redis
+- Prometheus
+- Grafana
+- Docker
+- GitHub Actions
 
+## Portfolio Impact
+
+This system demonstrates:
+
+- End-to-end ML system design
+- Real-time stream processing
+- Online learning under concept drift
+- Explainable AI for high-stakes domains
+- Production-grade observability

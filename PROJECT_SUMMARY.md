@@ -158,6 +158,11 @@ anomaly-platform/
 - **Testing:** pytest, pytest-asyncio
 - **CI/CD:** GitHub Actions
 
+## ⚠️ Setup Notes
+
+- **pydantic-settings**: Required for config (in `requirements.txt` and `setup.py`). Run `pip install -r requirements.txt` or `./quickstart.sh` before first use.
+- **Docker**: Image generates sample data at build time, runs pipeline at startup, then starts API. Use `docker run -p 8000:8000 anomaly-platform`; run dashboard separately if needed.
+
 ## 📝 Next Steps
 
 1. Run the quickstart script to set up the environment
@@ -178,5 +183,5 @@ This project demonstrates:
 - ✅ Testing and CI/CD
 - ✅ Documentation and reproducibility
 
-Perfect for showcasing skills to Big Tech and Palantir!
+
 

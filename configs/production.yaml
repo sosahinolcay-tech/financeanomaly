@@ -1,0 +1,6 @@
+# Production overrides
+
+extends: base.yaml
+
+stream:
+  speed_multiplier: 1.0  # Real-time

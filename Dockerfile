@@ -16,9 +16,13 @@ COPY src/ ./src/
 COPY data/ ./data/
 COPY notebooks/ ./notebooks/
 
+# Generate sample data for pipeline
+ENV PYTHONPATH=/app
+RUN python -m src.ap.cli generate-data --output data/sample_trades.csv --num-events 500
+
 # Expose ports
 EXPOSE 8000 8501
 
-# Default command (can be overridden)
-CMD ["python", "-m", "src.ap.cli", "run-pipeline"]
+# Run pipeline (populates DB), then start API server
+CMD ["sh", "-c", "python -m src.ap.cli run-pipeline --data data/sample_trades.csv --speed 100 && exec uvicorn src.ap.api.server:app --host 0.0.0.0 --port 8000"]
 

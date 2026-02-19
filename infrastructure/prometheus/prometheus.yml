@@ -1,0 +1,11 @@
+# Prometheus config - scrape API metrics (placeholder)
+# Add prometheus_client to API and expose /metrics
+
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "mip-api"
+    static_configs:
+      - targets: ["api:8000"]
+    metrics_path: /metrics

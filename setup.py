@@ -26,6 +26,7 @@ setup(
         "streamlit>=1.28.0",
         "plotly>=5.17.0",
         "pydantic>=2.5.0",
+        "pydantic-settings>=2.0.0",
         "requests>=2.31.0",
     ],
     extras_require={

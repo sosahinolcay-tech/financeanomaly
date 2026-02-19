@@ -1,0 +1,38 @@
+# Run from repo root: docker-compose -f docker/docker-compose.yml up --build
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/api.Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../data:/app/data
+    environment:
+      - PYTHONPATH=/app:/app/src
+
+  dashboard:
+    build:
+      context: ..
+      dockerfile: docker/dashboard.Dockerfile
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    environment:
+      - PYTHONPATH=/app:/app/src
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/worker.Dockerfile
+    volumes:
+      - ../data:/app/data
+    depends_on:
+      - api
+    environment:
+      - PYTHONPATH=/app:/app/src
+    # Run once to populate DB (optional; API/dashboard can run standalone)
+    profiles:
+      - full
