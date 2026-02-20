@@ -10,10 +10,11 @@ except ImportError:
     anomaly = compose = preprocessing = None
 
 from ..config import settings
-from .base import BaseDetector
+from .base import Detector
+from .thresholding import StaticThreshold
 
 
-class RiverDetector(BaseDetector):
+class RiverDetector(Detector):
     """Online adaptive anomaly detector using HalfSpaceTrees."""
 
     def __init__(self, threshold: float = None, n_trees: int = None):
@@ -60,6 +61,7 @@ class RiverDetector(BaseDetector):
         return s
 
     def is_anomaly(self, features: Dict[str, float], threshold: Optional[float] = None) -> bool:
+        """Backward compat - use ThresholdStrategy in pipeline instead."""
         score = self.score(features)
         thresh = threshold if threshold is not None else self.threshold
-        return score > thresh
+        return StaticThreshold(thresh, "above").is_anomaly(score)

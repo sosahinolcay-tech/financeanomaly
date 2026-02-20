@@ -1,0 +1,50 @@
+{
+  "id": null,
+  "uid": "mip-market-intelligence",
+  "title": "MIP - Market Intelligence View",
+  "tags": ["mip", "market"],
+  "timezone": "browser",
+  "editable": true,
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Price Chart with Anomaly Markers",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 8},
+      "targets": [
+        {"expr": "# Placeholder - requires market data source", "legendFormat": "price"},
+        {"expr": "# Anomaly events as annotations", "legendFormat": "anomaly"}
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Realized Volatility Overlay",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 6},
+      "targets": [
+        {"expr": "# Placeholder - realized vol from features", "legendFormat": "volatility"}
+      ]
+    },
+    {
+      "id": 3,
+      "type": "heatmap",
+      "title": "OFI Heatmap",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 6},
+      "targets": [
+        {"expr": "# Placeholder - order flow imbalance", "legendFormat": "OFI"}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Regime Classification Timeline",
+      "gridPos": {"x": 0, "y": 14, "w": 24, "h": 5},
+      "targets": [
+        {"expr": "# Placeholder - HMM regime state", "legendFormat": "regime"}
+      ]
+    }
+  ]
+}

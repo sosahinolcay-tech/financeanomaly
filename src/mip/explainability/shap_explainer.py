@@ -6,13 +6,13 @@ import numpy as np
 import shap
 
 from ..config import settings
-from ..detection.base import BaseDetector
+from ..detection.base import Detector
 
 
 class SHAPExplainer:
     """SHAP explainer for anomaly detection models."""
 
-    def __init__(self, detector: BaseDetector, feature_names: List[str]):
+    def __init__(self, detector: Detector, feature_names: List[str]):
         self.detector = detector
         self.feature_names = feature_names
         self.explainer: Optional[shap.TreeExplainer] = None

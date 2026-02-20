@@ -1,0 +1,116 @@
+{
+  "id": null,
+  "uid": "mip-system-health",
+  "title": "MIP - System Health",
+  "tags": ["mip", "system"],
+  "timezone": "browser",
+  "editable": true,
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Event Processing Latency (p50)",
+      "gridPos": {"x": 0, "y": 0, "w": 4, "h": 4},
+      "targets": [
+        {"expr": "histogram_quantile(0.5, sum(rate(event_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p50"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Event Processing Latency (p95)",
+      "gridPos": {"x": 4, "y": 0, "w": 4, "h": 4},
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum(rate(event_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p95"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Event Processing Latency (p99)",
+      "gridPos": {"x": 8, "y": 0, "w": 4, "h": 4},
+      "targets": [
+        {"expr": "histogram_quantile(0.99, sum(rate(event_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p99"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 4,
+      "type": "graph",
+      "title": "Event Latency Histogram",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 4},
+      "targets": [
+        {"expr": "rate(event_latency_seconds_bucket[5m])", "legendFormat": "{{le}}"}
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Events per Second",
+      "gridPos": {"x": 0, "y": 4, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "rate(events_processed_total[1m]) * 60", "legendFormat": "events/s"}
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Model Inference Time",
+      "gridPos": {"x": 6, "y": 4, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum(rate(model_inference_seconds_bucket[5m])) by (le))", "legendFormat": "p95"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Queue Depth",
+      "gridPos": {"x": 12, "y": 4, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "queue_depth", "legendFormat": "{{queue}}"}
+      ]
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "WebSocket Reconnects",
+      "gridPos": {"x": 18, "y": 4, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "increase(websocket_reconnects_total[1h])", "legendFormat": "{{source}}"}
+      ]
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Exception Rate",
+      "gridPos": {"x": 0, "y": 8, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "rate(exception_total[5m])", "legendFormat": "{{type}}"}
+      ]
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Dropped Events",
+      "gridPos": {"x": 6, "y": 8, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "increase(dropped_events_total[1h])", "legendFormat": "dropped"}
+      ]
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Backpressure Activations",
+      "gridPos": {"x": 12, "y": 8, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "increase(backpressure_activations_total[1h])", "legendFormat": "backpressure"}
+      ]
+    }
+  ]
+}

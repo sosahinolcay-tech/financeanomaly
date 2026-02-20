@@ -2,10 +2,17 @@
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import Response
 from typing import Optional
 
 from mip.persistence.alerts_repo import AlertsRepository
 from mip.config import settings
+
+try:
+    from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+    HAS_PROMETHEUS = True
+except ImportError:
+    HAS_PROMETHEUS = False
 
 app = FastAPI(title="Market Intelligence Platform API", version="0.2.0")
 
@@ -18,6 +25,14 @@ app.add_middleware(
 )
 
 alerts_repo = AlertsRepository()
+
+
+@app.get("/metrics/prometheus")
+async def prometheus_metrics():
+    """Prometheus scrape endpoint."""
+    if not HAS_PROMETHEUS:
+        return Response(content="# Prometheus client not installed\n", media_type="text/plain")
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get("/")

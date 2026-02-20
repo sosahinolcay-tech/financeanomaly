@@ -1,6 +1,6 @@
 """Pipeline orchestration."""
 
-import asyncio
+import time
 from pathlib import Path
 
 from ..config import settings
@@ -8,9 +8,22 @@ from ..ingestion.replay import ReplayIngestion
 from ..feature_engine.store import FeatureStore
 from ..detection.isolation_forest import IsolationForestDetector
 from ..detection.river_detector import RiverDetector
+from ..detection.thresholding import StaticThreshold, ThresholdStrategy
 from ..explainability.shap_explainer import SHAPExplainer
 from ..explainability.rule_mapper import RuleMapperExplainer
 from ..persistence.alerts_repo import AlertsRepository
+
+try:
+    from ..observability.metrics import (
+        event_latency_seconds,
+        model_inference_seconds,
+        anomaly_score as anomaly_score_metric,
+        alerts_total as alerts_total_counter,
+        events_processed_total,
+    )
+    METRICS_ENABLED = True
+except ImportError:
+    METRICS_ENABLED = False
 
 
 async def run_pipeline(
@@ -28,6 +41,10 @@ async def run_pipeline(
     alerts_repo = AlertsRepository()
 
     detector = IsolationForestDetector() if detector_type == "isolation_forest" else RiverDetector()
+    threshold_strategy: ThresholdStrategy = (
+        StaticThreshold(-0.5, "below") if detector_type == "isolation_forest"
+        else StaticThreshold(0.5, "above")
+    )
     explainer: SHAPExplainer | RuleMapperExplainer = (
         RuleMapperExplainer() if explainer_type == "rules" else None
     )
@@ -57,11 +74,18 @@ async def run_pipeline(
         if not f:
             continue
         total += 1
+        t0 = time.perf_counter() if METRICS_ENABLED else None
         try:
             score = detector.score(f)
-            is_anomaly = detector.is_anomaly(f)
+            is_anomaly = threshold_strategy.is_anomaly(score)
+            if METRICS_ENABLED:
+                model_inference_seconds.observe(time.perf_counter() - t0)
+                event_latency_seconds.labels(stage="full").observe(time.perf_counter() - t0)
+                anomaly_score_metric.labels(symbol=event.symbol).observe(score)
             if is_anomaly:
                 anomaly_count += 1
+                if METRICS_ENABLED:
+                    alerts_total_counter.labels(symbol=event.symbol, severity="anomaly").inc()
                 expl = explainer.explain(f) if isinstance(explainer, SHAPExplainer) else explainer.explain(f, score)
                 aid = alerts_repo.save(
                     event.timestamp, event.symbol, score, True, f, expl
@@ -69,6 +93,8 @@ async def run_pipeline(
                 print(f"[ALERT #{aid}] {event.symbol} @ {event.timestamp} Score: {score:.3f}")
         except Exception as e:
             print(f"Error: {e}")
+        if METRICS_ENABLED:
+            events_processed_total.inc()
         if total % 100 == 0:
             print(f"Processed {total}, anomalies: {anomaly_count}")
 

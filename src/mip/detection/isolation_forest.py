@@ -6,10 +6,11 @@ import numpy as np
 from sklearn.ensemble import IsolationForest
 
 from ..config import settings
-from .base import BaseDetector
+from .base import Detector
+from .thresholding import StaticThreshold
 
 
-class IsolationForestDetector(BaseDetector):
+class IsolationForestDetector(Detector):
     """Isolation Forest-based anomaly detector."""
 
     def __init__(self, n_estimators: int = None, contamination: float = None, threshold: float = None):
@@ -43,6 +44,7 @@ class IsolationForestDetector(BaseDetector):
         return float(self.model.decision_function(X)[0])
 
     def is_anomaly(self, features: Dict[str, float], threshold: Optional[float] = None) -> bool:
+        """Backward compat - use ThresholdStrategy in pipeline instead."""
         score = self.score(features)
         thresh = threshold if threshold is not None else self.threshold
-        return score < thresh
+        return StaticThreshold(thresh, "below").is_anomaly(score)

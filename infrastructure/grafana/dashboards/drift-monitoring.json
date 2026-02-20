@@ -1,0 +1,49 @@
+{
+  "id": null,
+  "uid": "mip-drift-monitoring",
+  "title": "MIP - Drift Monitoring",
+  "tags": ["mip", "drift"],
+  "timezone": "browser",
+  "editable": true,
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Feature Distribution Drift (KS statistic)",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 6},
+      "targets": [
+        {"expr": "feature_drift_statistic", "legendFormat": "{{feature}}"}
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "PSI per Feature",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 6},
+      "targets": [
+        {"expr": "feature_drift_statistic", "legendFormat": "{{feature}}"}
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "ADWIN Drift Trigger Timeline",
+      "gridPos": {"x": 0, "y": 6, "w": 12, "h": 5},
+      "targets": [
+        {"expr": "increase(adwin_drift_events_total[1m])", "legendFormat": "drift events"}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Alert-Rate Shift Detection",
+      "gridPos": {"x": 12, "y": 6, "w": 12, "h": 5},
+      "targets": [
+        {"expr": "rate(alerts_total[5m])", "legendFormat": "{{symbol}}"}
+      ]
+    }
+  ]
+}

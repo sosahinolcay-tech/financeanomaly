@@ -1,0 +1,68 @@
+{
+  "id": null,
+  "uid": "mip-detection-intelligence",
+  "title": "MIP - Detection Intelligence",
+  "tags": ["mip", "detection"],
+  "timezone": "browser",
+  "editable": true,
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Real-time Anomaly Score",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 6},
+      "targets": [
+        {"expr": "anomaly_score_sum / anomaly_score_count", "legendFormat": "{{symbol}}"}
+      ]
+    },
+    {
+      "id": 2,
+      "type": "histogram",
+      "title": "Rolling Score Distribution",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 6},
+      "targets": [
+        {"expr": "rate(anomaly_score_bucket[5m])", "legendFormat": "{{symbol}}"}
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Dynamic Threshold vs Score",
+      "gridPos": {"x": 0, "y": 6, "w": 12, "h": 5},
+      "targets": [
+        {"expr": "anomaly_score_sum / anomaly_score_count", "legendFormat": "score"},
+        {"expr": "avg_over_time(anomaly_score_sum[5m] / anomaly_score_count[5m]) * 1.5", "legendFormat": "threshold"}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Alerts per Minute",
+      "gridPos": {"x": 12, "y": 6, "w": 4, "h": 5},
+      "targets": [
+        {"expr": "rate(alerts_total[1m]) * 60", "legendFormat": "alerts/min"}
+      ]
+    },
+    {
+      "id": 5,
+      "type": "barchart",
+      "title": "Alerts per Symbol",
+      "gridPos": {"x": 16, "y": 6, "w": 4, "h": 5},
+      "targets": [
+        {"expr": "sum by (symbol) (increase(alerts_total[1h]))", "legendFormat": "{{symbol}}"}
+      ]
+    },
+    {
+      "id": 6,
+      "type": "piechart",
+      "title": "Alert Severity Distribution",
+      "gridPos": {"x": 20, "y": 6, "w": 4, "h": 5},
+      "targets": [
+        {"expr": "sum by (severity) (alerts_total)", "legendFormat": "{{severity}}"}
+      ]
+    }
+  ]
+}
