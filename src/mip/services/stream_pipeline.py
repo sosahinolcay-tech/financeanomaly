@@ -1,10 +1,8 @@
 """StreamPipeline - orchestrates ingest → feature_engine → detection → explain → alert."""
 
-from pathlib import Path
 from typing import Callable, AsyncIterator
 
 from ..domain.events import MarketEvent
-from ..domain.features import FeatureVector
 from ..feature_engine.store import FeatureStore
 from ..detection.base import Detector
 from ..detection.thresholding import ThresholdStrategy

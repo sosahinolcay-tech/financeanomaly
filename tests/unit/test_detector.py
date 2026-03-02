@@ -6,8 +6,9 @@ import numpy as np
 from mip.detection.isolation_forest import IsolationForestDetector
 
 try:
+    from mip.detection import river_detector
     from mip.detection.river_detector import RiverDetector
-    HAS_RIVER = True
+    HAS_RIVER = river_detector.HAS_RIVER
 except ImportError:
     HAS_RIVER = False
 

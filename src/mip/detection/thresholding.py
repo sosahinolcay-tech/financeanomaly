@@ -26,11 +26,12 @@ class StaticThreshold:
 
 
 class RollingQuantileThreshold:
-    """Dynamic percentile-based threshold - placeholder."""
+    """Dynamic rolling quantile threshold."""
 
-    def __init__(self, quantile: float = 0.99, window_size: int = 1000):
+    def __init__(self, quantile: float = 0.99, window_size: int = 1000, direction: str = "below"):
         self.quantile = quantile
         self.window_size = window_size
+        self.direction = direction
         self._scores: list[float] = []
 
     def is_anomaly(self, score: float) -> bool:
@@ -39,12 +40,16 @@ class RollingQuantileThreshold:
             self._scores.pop(0)
         if len(self._scores) < 10:
             return False
-        thresh = sorted(self._scores)[int(len(self._scores) * self.quantile)]
-        return score < thresh  # For IF-style (lower = anomaly)
+        sorted_scores = sorted(self._scores)
+        idx = min(len(sorted_scores) - 1, int(len(sorted_scores) * self.quantile))
+        thresh = sorted_scores[idx]
+        if self.direction == "below":
+            return score < thresh
+        return score > thresh
 
 
 class EWMAAdaptiveThreshold:
-    """EWMA baseline - placeholder."""
+    """EWMA baseline with sigma band anomaly trigger."""
 
     def __init__(self, alpha: float = 0.1, n_std: float = 3.0):
         self.alpha = alpha

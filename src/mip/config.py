@@ -1,12 +1,45 @@
 """Configuration management."""
 
 from pathlib import Path
-from typing import Optional
+from typing import Any, get_type_hints
+import os
 
 try:
     from pydantic_settings import BaseSettings
 except ImportError:
-    from pydantic import BaseSettings  # type: ignore
+    # pydantic v1 fallback
+    try:
+        from pydantic import BaseSettings  # type: ignore
+    except Exception:
+        # Lightweight fallback so local runs/tests don't hard-fail when
+        # pydantic-settings is missing in the active environment.
+        class BaseSettings:  # type: ignore
+            """Minimal BaseSettings-compatible fallback."""
+
+            def __init__(self, **overrides: Any) -> None:
+                hints = get_type_hints(self.__class__)
+                for key, typ in hints.items():
+                    if key.startswith("_"):
+                        continue
+                    default = getattr(self.__class__, key, None)
+                    raw = overrides.get(key, os.getenv(key, default))
+                    setattr(self, key, self._coerce(raw, typ))
+
+            @staticmethod
+            def _coerce(value: Any, typ: Any) -> Any:
+                if value is None:
+                    return value
+                if typ is Path:
+                    return Path(value)
+                if typ is bool:
+                    if isinstance(value, bool):
+                        return value
+                    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+                if typ is int:
+                    return int(value)
+                if typ is float:
+                    return float(value)
+                return value
 
 
 class Settings(BaseSettings):

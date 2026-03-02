@@ -1,23 +1,14 @@
 """Stream processor worker entrypoint."""
 
-# TODO: Run stream_processor against Kafka/WebSocket
-# For now, delegates to pipeline
-
 import asyncio
-from pathlib import Path
 
-from mip.services.pipeline import run_pipeline
-from mip.config import settings
+from mip.services.stream_processor import run_default_worker
 
 
 def main():
-    """Run pipeline as worker (replay mode)."""
-    asyncio.run(run_pipeline(
-        data_path=settings.SAMPLE_DATA_PATH,
-        detector_type="isolation_forest",
-        explainer_type="shap",
-        speed=100.0,
-    ))
+    """Run the default worker process."""
+    stats = asyncio.run(run_default_worker())
+    print(f"Worker complete. Processed={stats['processed']}, anomalies={stats['anomalies']}")
 
 
 if __name__ == "__main__":

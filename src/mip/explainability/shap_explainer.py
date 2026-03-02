@@ -1,9 +1,12 @@
 """SHAP-based explainability."""
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
-import shap
+try:
+    import shap
+except Exception:  # pragma: no cover - optional dependency
+    shap = None
 
 from ..config import settings
 from ..detection.base import Detector
@@ -15,8 +18,8 @@ class SHAPExplainer:
     def __init__(self, detector: Detector, feature_names: List[str]):
         self.detector = detector
         self.feature_names = feature_names
-        self.explainer: Optional[shap.TreeExplainer] = None
-        if hasattr(detector, "model") and detector.model is not None:
+        self.explainer: Optional[Any] = None
+        if shap is not None and hasattr(detector, "model") and detector.model is not None:
             try:
                 if hasattr(detector.model, "estimators_"):
                     self.explainer = shap.TreeExplainer(detector.model)

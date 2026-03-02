@@ -2,7 +2,7 @@
 
 import asyncio
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import AsyncIterator, Optional
 
@@ -17,8 +17,8 @@ class ReplayIngestion(BaseIngestion):
     """Replays market events from CSV or generates synthetic data."""
 
     def __init__(self, speed_multiplier: float = None):
+        super().__init__()
         self.speed_multiplier = speed_multiplier or settings.STREAM_SPEED_MULTIPLIER
-        self.running = False
 
     async def stream_from_csv(
         self,
@@ -44,11 +44,11 @@ class ReplayIngestion(BaseIngestion):
                 raise ValueError(f"CSV missing required column: {col}")
 
         df = df.sort_values("timestamp").reset_index(drop=True)
-        self.running = True
+        self._running = True
         prev_ts = None
 
         for _, row in df.iterrows():
-            if not self.running:
+            if not self.is_running:
                 break
             event = MarketEvent(
                 timestamp=row["timestamp"],
@@ -70,4 +70,4 @@ class ReplayIngestion(BaseIngestion):
             yield event
 
     def stop(self) -> None:
-        self.running = False
+        super().stop()
