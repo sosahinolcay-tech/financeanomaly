@@ -11,7 +11,7 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 
 dependencies = [
     "fastapi>=0.110",
@@ -46,11 +46,14 @@ dev = [
 ]
 
 [project.scripts]
-mip-cli = "apps.cli.main:main"
+mip-cli = "mip.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["src*", "apps*"]
+where = ["src"]
+include = ["mip*", "ap*"]
 
 [tool.black]
 line-length = 100
